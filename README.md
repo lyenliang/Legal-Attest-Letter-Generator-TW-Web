@@ -2,7 +2,7 @@
 台灣郵局存證信函產生器 (PDF 格式)。  
 A tool for creating a legal attest letter of Taiwan - in PDF format.
 
-![](./img/sample.png)
+![](.python/img/sample.png)
 
 ## Feature ##
 - 輸出整齊、美觀的信函  
