@@ -16,7 +16,7 @@ class WelcomeController < ApplicationController
 		path = "public/download/#{@name}.txt"
 		innerText = params[:innerText]
 		File.open(path, "w+") do |f|
-		  f.write(innerText)
+		  @fresult = f.write(innerText)
 		end
 
 		command = "python3 tw-lal-generator.py ../#{path}"
@@ -41,8 +41,7 @@ class WelcomeController < ApplicationController
 		end
 
 		@result = %x(cd python ; #{command} --outputFileName ../public/download/#{@name}.pdf 2>&1)
-		puts "!!!!!!!!!!!!!!!!!!!!!!!!!!"
-		puts @result
+
 		send_file( Rails.root.join('public/download', "#{@name}.pdf"), type: 'application/pdf')
 	end
 
