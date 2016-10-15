@@ -5,12 +5,12 @@ class WelcomeController < ApplicationController
 	def generate_pdf
 		@name = SecureRandom.hex(13)
 
-		senderName = params[:senderName]
-		senderAddr = params[:senderAddr]
-		receiverName = params[:receiverName]
-		receiverAddr = params[:receiverAddr]
-		ccName = params[:ccName]
-		ccAddr = params[:ccAddr]
+		senderName = params[:senderName].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
+		senderAddr = params[:senderAddr].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
+		receiverName = params[:receiverName].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
+		receiverAddr = params[:receiverAddr].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
+		ccName = params[:ccName].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
+		ccAddr = params[:ccAddr].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
 
 		# write text into a file
 		path = "public/download/#{@name}.txt"
@@ -41,7 +41,8 @@ class WelcomeController < ApplicationController
 		end
 
 		@result = %x(cd python ; #{command} --outputFileName ../public/download/#{@name}.pdf 2>&1)
-
+		puts "!!!!!!!!!!!!!!!!!!!!!!!!!!"
+		puts @result
 		send_file( Rails.root.join('public/download', "#{@name}.pdf"), type: 'application/pdf')
 	end
 
