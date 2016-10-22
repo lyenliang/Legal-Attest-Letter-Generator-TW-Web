@@ -82,10 +82,11 @@ class GUI:
         self.receivers_addr = []
         self.ccs = []
         self.cc_addr = []
+        self.target = ['寄件人', '收件人', '副本收件人']
         self.target_lists = {
-            '寄件人': (self.senders, self.senders_addr),
-            '收件人': (self.receivers, self.receivers_addr),
-            '副本收件人': (self.ccs, self.cc_addr)
+            self.target[0]: (self.senders, self.senders_addr),
+            self.target[1]: (self.receivers, self.receivers_addr),
+            self.target[2]: (self.ccs, self.cc_addr)
         }
 
     def __do_work(self, sender_list, sender_addr_list,
@@ -152,8 +153,25 @@ class GUI:
         self.root.title(self.opened_filename + ' - ' + self.program_title)
         current_text = self.article_text.get('1.0', 'end')
         with open(self.opened_filename, 'w', encoding='utf-8') as text_file:
+            for k in self.target:
+                text_file.write(k + '：\n')
+                core.fill_name_address(self.target_lists[k][0],
+                                       self.target_lists[k][1],
+                                       self.__save_info_if_zero,
+                                       self.__save_info_if_nonzero,
+                                       **{'fd': text_file})
+            text_file.write('########################################\n')
             text_file.write(current_text)
         self.status_label.config(text='已存檔')
+
+    def __save_info_if_zero(self, **kwargs):
+        kwargs['fd'].write('\t\t姓名：\n')
+        kwargs['fd'].write('\t\t詳細地址：\n')
+
+    def __save_info_if_nonzero(self, all_name, address, **kwargs):
+        kwargs['fd'].write('\t\t姓名： ' + all_name + '\n')
+        kwargs['fd'].write('\t\t詳細地址： ' + address + '\n')
+        return kwargs
 
     def __export_to_pdf(self):
         self.output_filename = tkinter.filedialog.asksaveasfilename(
@@ -202,23 +220,22 @@ class GUI:
     def __show_info(self):
         self.info_text.config(state='normal')
         self.info_text.delete('1.0', 'end')
-        for k in ['寄件人', '收件人', '副本收件人']:
+        for k in self.target:
             self.info_text.insert('end', k + '：\n')
-            self.__insert_all_info(self.info_text,
-                                   self.target_lists[k][0],
-                                   self.target_lists[k][1])
+            core.fill_name_address(self.target_lists[k][0],
+                                   self.target_lists[k][1],
+                                   self.__insert_info_if_empty,
+                                   self.__insert_info_if_nonempty)
         self.info_text.config(state='disable')
 
-    def __insert_all_info(self, text_widget, namelist, addrlist):
-        max_count = max(len(namelist), len(addrlist))
-        if max_count == 0:
-            text_widget.insert('end', '\t\t姓名：\n')
-            text_widget.insert('end', '\t\t詳細地址：\n')
-        for i in range(max_count):
-            all_name = ' '.join(namelist[i]) if i <= len(namelist)-1 else ''
-            text_widget.insert('end', '\t\t姓名： ' + all_name + '\n')
-            address = addrlist[i] if i <= len(addrlist)-1 else ''
-            text_widget.insert('end', '\t\t詳細地址： ' + address + '\n')
+    def __insert_info_if_empty(self, **kwargs):
+        self.info_text.insert('end', '\t\t姓名：\n')
+        self.info_text.insert('end', '\t\t詳細地址：\n')
+
+    def __insert_info_if_nonempty(self, all_name, address, **kwargs):
+        self.info_text.insert('end', '\t\t姓名： ' + all_name + '\n')
+        self.info_text.insert('end', '\t\t詳細地址： ' + address + '\n')
+        return kwargs
 
     def mainloop(self):
         self.root.mainloop()
