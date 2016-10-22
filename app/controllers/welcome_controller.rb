@@ -3,7 +3,7 @@ require 'securerandom'
 class WelcomeController < ApplicationController
 
 	def generate_pdf
-		@name = SecureRandom.hex(13)
+		@name = generate_file_name
 
 		senderName = params[:senderName].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
 		senderAddr = params[:senderAddr].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
@@ -43,6 +43,18 @@ class WelcomeController < ApplicationController
 		@result = %x(cd python ; #{command} --outputFileName ../public/download/#{@name}.pdf 2>&1)
 
 		send_file( Rails.root.join('public/download', "#{@name}.pdf"), type: 'application/pdf')
+	end
+	
+	private 
+	
+	def generate_file_name
+		t = Time.zone.now
+		return "lal_" << t.year.to_s \
+					  << "%02d" % t.month.to_s \
+					  << "_" \
+					  << "%02d" % t.hour.to_s \
+					  << "%02d" % t.min.to_s \
+					  << "%02d" % t.sec.to_s
 	end
 
 end
