@@ -5,12 +5,12 @@ class WelcomeController < ApplicationController
 	def generate_pdf
 		@name = generate_file_name
 
-		senderName = params[:senderName].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
-		senderAddr = params[:senderAddr].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
-		receiverName = params[:receiverName].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
-		receiverAddr = params[:receiverAddr].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
-		ccName = params[:ccName].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
-		ccAddr = params[:ccAddr].gsub(/[\~\!\@\#\$\%\^\&\*\(\)\;\'\"]/, '')
+		senderName = params[:senderName].gsub(/[^\p{Alnum}]/,'')
+		senderAddr = params[:senderAddr].gsub(/[^\p{Alnum}]/,'')
+		receiverName = params[:receiverName].gsub(/[^\p{Alnum}]/,'')
+		receiverAddr = params[:receiverAddr].gsub(/[^\p{Alnum}]/,'')
+		ccName = params[:ccName].gsub(/[^\p{Alnum}]/,'')
+		ccAddr = params[:ccAddr].gsub(/[^\p{Alnum}]/,'')
 
 		# write text into a file
 		path = "public/download/#{@name}.txt"
