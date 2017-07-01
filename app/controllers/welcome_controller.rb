@@ -54,7 +54,9 @@ class WelcomeController < ApplicationController
 					  << "_" \
 					  << "%02d" % t.hour.to_s \
 					  << "%02d" % t.min.to_s \
-					  << "%02d" % t.sec.to_s
+					  << "%02d" % t.sec.to_s \
+            << "_" \
+            << SecureRandom.hex
 	end
 
 end
