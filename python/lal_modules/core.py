@@ -1,6 +1,9 @@
 """
 Core functions
 """
+import random
+import string
+import datetime
 from os import remove
 from . import pdfpage
 from . import pdfpainter
@@ -23,26 +26,38 @@ def read_main_article(filepath):
     text = text.lstrip(bom)
     return text
 
-def merge_text_and_letter(output_filename):
+def merge_text_and_letter(text_path, letter_path, output_filename):
     print('Merging...')
-    page_merge = pdfpage.PDFPageMerge(GENERATED_TEXT_PATH,
-                                      GENERATED_BLANK_LETTER_PATH,
+    page_merge = pdfpage.PDFPageMerge(text_path,
+                                      letter_path,
                                       output_filename)
     for i in range(page_merge.get_src_total_page()):
         page_merge.merge_src_page_to_dest_page(i, i)
     page_merge.save()
 
-def clean_temp_files():
-    remove(GENERATED_TEXT_PATH)
-    remove(GENERATED_BLANK_LETTER_PATH)
+def gen_filename(rand_length):
+    now = datetime.datetime.now()
+    prefix = ''.join(
+        random.choice(string.ascii_lowercase) for i in range(rand_length))
+    rand_str = ''.join(
+        random.choice(string.ascii_lowercase) for i in range(rand_length))
+    ret = ('%s-%s-%s' % (prefix, now.strftime('%Y%m%d%H%M%S.%f'), rand_str))
+    return ret
+
+
+def clean_temp_files(text_path, letter_path):
+    remove(text_path)
+    remove(letter_path)
 
 def generate_text_and_letter(senders, senders_addr,
                              receivers, receivers_addr,
                              ccs, cc_addr,
                              main_text):
-    generator = pdfpainter.PDFPainter(GENERATED_TEXT_PATH,
+    text_path = gen_filename(20)
+    letter_path = gen_filename(21)
+    generator = pdfpainter.PDFPainter(text_path,
                                       LETTER_FORMAT_WIDE_HEIGHT[0], LETTER_FORMAT_WIDE_HEIGHT[1])
-    blank_letter_producer = pdfpage.PDFPagePick(LETTER_FORMAT_PATH, GENERATED_BLANK_LETTER_PATH)
+    blank_letter_producer = pdfpage.PDFPagePick(LETTER_FORMAT_PATH, letter_path)
 
     # write name and address directly if one page is enough
     one_page_is_enough = _is_only_one_name_or_address(senders, senders_addr) and \
@@ -64,6 +79,7 @@ def generate_text_and_letter(senders, senders_addr,
 
     blank_letter_producer.save()
     generator.save()
+    return text_path, letter_path
 
 def _is_only_one_name_or_address(namelist, addresslist):
     ret_value = True
