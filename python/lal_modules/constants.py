@@ -1,7 +1,7 @@
 """
 Constants which will be used in the main logic.
 """
-VERSION = 'v2.2.2'
+
 LETTER_FORMAT_PATH = 'res/tw_lal.pdf'
 DEFAULT_FONT_PATH = 'res/TW-Kai-98_1.ttf'
 _PDF_INCH = 72
